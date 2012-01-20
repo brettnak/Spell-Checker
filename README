@@ -1,0 +1,31 @@
+Author: Brett Nakashima
+Email:  brettnak@brettnak.com
+
+I chose to write this program in ruby because I'm the most familiar with ruby.
+
+This program runs on ruby 1.9.2, it probably runs on earlier versions but it 
+was not tested. If you would like to run the specs, please install the rspec
+gem:
+    gem install rspec
+
+My installation is through RVM and has irb installed by default.  If you run
+the program and you see errors for readline or optparse, please install them
+through the gem manager.  I beleive they are included but if they are not
+installed on your machine by default, please run:
+    gem install readline optparse
+
+################################################################################
+
+Usage: suggest [options]
+    -f, --file [WORD_LIST_FILE]      A line separated list of words that will
+                                     become the dictionary
+    -h, --help                       Show this message
+
+################################################################################
+
+Examples:
+    To load the wordlist from /usr/share/dict/words
+    suggest -f /usr/share/dict/words
+
+    To run the tests
+    rspec -c spec/

@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+require 'readline'
+require 'optparse'
+require File.join( File.dirname( __FILE__ ), 'suggestor', 'suggestor' )
+
+class SuggestCLI
+  @@default_options = {
+    :word_list => "./wordlist.txt",
+  }
+
+  def initialize( options )
+    @options   = options
+    @suggestor = Suggestor.new
+    self.populate_word_list
+  end
+
+  def populate_word_list
+    File.open( @options[:word_list], 'r' ) do |file|
+      file.each_line do |line|
+        line = line.strip
+        @suggestor.add_word( line )
+      end
+    end
+
+  end
+  
+  def start
+    loop do
+      line = Readline::readline('> ')
+      
+      # This will catch the ^D
+      if line.nil?
+        puts "\n"
+        break
+      end
+      
+      Readline::HISTORY.push( line )
+      
+      suggestion = @suggestor.suggestion( line )
+      if suggestion.nil?
+        puts "NO SUGGESTION"
+      else
+        puts suggestion
+      end
+    end
+  end
+
+  def SuggestCLI.parse_options( args )
+    options = @@default_options
+
+    parser = OptionParser.new do |opts|
+      opts.banner = "Usage: suggest [options]"
+      opts.on( "-f", "--file [WORD_LIST_FILE]", "A line separated list of words that will become the dictionary.", "default: ./wordlist.txt" ) do |w|
+        options[:word_list] = w.strip
+      end
+
+      opts.on_tail("-h", "--help", "Show this message") do
+        puts opts
+        exit
+      end
+    end
+
+    parser.parse!( args )
+
+    return options
+  end
+end
+
+if __FILE__ == $0
+  # catch ^C ( SIGINT ) and quit
+  trap('INT' ) do
+    puts "\n"
+    exit
+  end
+
+  options = SuggestCLI.parse_options( ARGV )
+  cli = SuggestCLI.new( options )
+  cli.start
+end
